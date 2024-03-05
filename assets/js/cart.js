@@ -32,11 +32,13 @@ const emptyCart = () => {
     const emptyCart = document.getElementById("empty-cart")
 
     emptyCart.innerHTML += `
+    <div class="empty">
     <p>Your cart is empty!</p>
     <p>Browse our categories and discover our best deals!</p>
 
 
     <a href="http://127.0.0.1:5500/home.html">Start Shopping</a>
+    </div>
     `
 }
 
