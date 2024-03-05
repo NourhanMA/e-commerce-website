@@ -8,15 +8,19 @@ let categories = []
 let filterdProducts = []
 let filterdCategories = []
 
-fetch("https://api.escuelajs.co/api/v1/products").then((data) => {
+fetch("https://fakestoreapi.com/products").then((data) => {
     data.json().then((finaldata) => {
+        console.log(finaldata)
         allProducts = finaldata.map((p) => {
             return {
                 id: p.id,
                 name: p.title,
-                image: p.images[0],
-                category: p.category.name,
+                // image: p.images[0].replace(/[^\w/:.\s]/gi, ''),
+                image: p.image,
+                // category: p.category.name,
+                category: p.category,
                 price: p.price,
+                description: p.description,
                 quantity: Math.floor(Math.random() * 10),
                 cartQuantity: 0
             }
@@ -72,8 +76,10 @@ const addToCart = (product) => {
         let isExist = cartProducts.find((el) => (el.id == product.id))
 
         if (isExist) {
-            const elem = cartProducts.filter((el) => el.id == product.id)
-            elem.cartQuantity < product.cartQuantity ? setLocalItem(product, cartProducts) : ''
+            product.cartQuantity = product.cartQuantity += 1
+            // arr.push(product)
+            cartProducts = cartProducts.filter((el) => (el.id == product.id && el.quantity > el.cartQuantity) ? el.cartQuantity += 1 : '')
+            localStorage.setItem('cart-products', JSON.stringify(cartProducts))
 
         } else {
             setLocalItem(product, cartProducts)
