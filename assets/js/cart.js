@@ -5,12 +5,12 @@ const darkMode = () => {
     localStorage.setItem('mode', mode ? 'light' : 'dark-mode')
     document.body.classList.toggle('dark-mode')
 
-
+    mode ? document.getElementById('mode').innerHTML = 'dark' : document.getElementById('mode').innerHTML = 'light'
 }
 const getMode = () => {
-    console.log("GGG")
     if ('mode' in localStorage) {
         document.body.classList.add(localStorage.getItem('mode'))
+        localStorage.getItem('mode') == 'dark-mode' ? mode = false : mode = true
     } else {
         localStorage.setItem('mode', mode ? 'light' : 'dark-mode')
         document.body.classList.add(localStorage.getItem('mode'))
