@@ -1,4 +1,24 @@
-const cartContainer = document.getElementById("cart-container")
+let mode = true
+const darkMode = () => {
+    mode = !mode
+    console.log(mode)
+    localStorage.setItem('mode', mode ? 'light' : 'dark-mode')
+    document.body.classList.toggle('dark-mode')
+
+
+}
+const getMode = () => {
+    console.log("GGG")
+    if ('mode' in localStorage) {
+        document.body.classList.add(localStorage.getItem('mode'))
+    } else {
+        localStorage.setItem('mode', mode ? 'light' : 'dark-mode')
+        document.body.classList.add(localStorage.getItem('mode'))
+    }
+}
+getMode()
+const cartContainer = document.getElementById("rows")
+
 const renderCart = (product, length) => {
 
     const cartDiv = document.createElement('div')
@@ -15,23 +35,81 @@ const renderCart = (product, length) => {
             <p class="price">EGP ${product.price}</p>
         </div>
         <div class="quantity">
-            <button class="add">+</button>
-            <span class="number">${product.cartQuantity}</span>
-            <button class="remove">&#x2212;</button>
+            <button id="delete-${product.id}" class=delete></button>
+
+            <button class="add" id="add-${product.id}">+</button>
+            <span class="number" id="productNumber-${product.id}">${product.cartQuantity}</span>
+            <button class="remove"  id="remove-${product.id}">&#x2212;</button>
+
         </div>
     </div>
     `
-
-
     cartContainer.appendChild(cartDiv)
+
+
+
+    let addBtn = document.getElementById(`add-${product.id}`)
+    console.log(addBtn)
+    addBtn.addEventListener('click', () => {
+        addProduct(product)
+    })
+
+    let removeBtn = document.getElementById(`remove-${product.id}`)
+    removeBtn.addEventListener('click', () => {
+        removeProduct(product)
+    })
+
+    let deleteBtn = document.getElementById(`delete-${product.id}`)
+    deleteBtn.addEventListener('click', () => {
+        deleteProduct(product)
+    })
 }
 
+const addProduct = (p) => {
+    const number = document.getElementById(`productNumber-${p.id}`)
+    p.cartQuantity += 1
+    addToCart(p)
+    number.innerHTML = p.cartQuantity
+    // console.log(cartProducts)
+}
 
+const removeProduct = (p) => {
+    if (p.cartQuantity != 1) {
+        const number = document.getElementById(`productNumber-${p.id}`)
+        p.cartQuantity -= 1
+        addToCart(p)
+        number.innerHTML = p.cartQuantity
+    }
+}
+
+const deleteProduct = (p) => {
+    cartProducts = cartProducts.filter(el => el.id != p.id)
+
+    resetPage()
+    if (cartProducts.length == 0) {
+        const productContainer = document.getElementById('products-container')
+        productContainer.innerHTML = ''
+        emptyCart()
+    }
+    else {
+        localStorage.setItem('cart-products', JSON.stringify(cartProducts))
+        cartProducts.forEach(product => {
+            renderCart(product)
+        }), calculatePrice()
+    }
+
+}
+
+const resetPage = () => {
+    const productContainer = document.getElementById('rows')
+    productContainer.innerHTML = ''
+}
 
 const emptyCart = () => {
-    const emptyCart = document.getElementById("empty-cart")
+    const emptyCart = document.getElementById("products-container")
 
     emptyCart.innerHTML += `
+    <div id="empty-cart">
     <div class="empty">
     <p>Your cart is empty!</p>
     <p>Browse our categories and discover our best deals!</p>
@@ -39,13 +117,15 @@ const emptyCart = () => {
 
     <a href="http://127.0.0.1:5500/home.html">Start Shopping</a>
     </div>
+    </div>
+
     `
 }
-
+let cartProducts;
 const getCartProduct = () => {
     if ('cart-products' in localStorage) {
-        let cartProducts = JSON.parse(localStorage.getItem('cart-products'))
-        console.log(cartProducts)
+        cartProducts = JSON.parse(localStorage.getItem('cart-products'))
+        // console.log(cartProducts)
 
         const cartHeader = document.createElement('div')
         cartHeader.classList.add("cart-title")
@@ -54,15 +134,42 @@ const getCartProduct = () => {
         cartProducts.forEach(product => {
             renderCart(product)
         });
-        // product.cartQuantity = product.cartQuantity += 1
-        // cartProducts = cartProducts.filter((el) => (el.id == product.id && el.quantity > el.cartQuantity) ? el.cartQuantity += 1 : '')
-        // localStorage.setItem('cart-products', JSON.stringify(cartProducts))
+        calculatePrice()
 
     } else {
         emptyCart()
-        console.log("Your cart is empty!Browse our categories and discover our best deals!")
     }
 }
+
+
+const addToCart = (product) => {
+    localStorage.setItem('cart-products', JSON.stringify(cartProducts))
+
+    calculatePrice()
+}
+
+
+let subtotal = 0
+let total = 0
+
+const calculatePrice = () => {
+    subtotal = 0
+    total = 0
+    cartProducts.forEach(el => {
+        subtotal += (el.cartQuantity * el.price)
+    })
+    total = subtotal + 50
+
+
+    const subtotalEl = document.getElementById("subtotal")
+    const totalEl = document.getElementById("total")
+
+    subtotalEl.innerHTML = parseFloat(subtotal).toFixed(2)
+    totalEl.innerHTML = parseFloat(total).toFixed(2)
+
+
+}
+
 
 
 

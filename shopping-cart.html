@@ -22,23 +22,86 @@
                 <div class="logo">
                     <a href="http://127.0.0.1:5500/home.html">Blanc</a>
                 </div>
-                <div class="search">
+                <!-- <div class="search">
                     <input type="text">
-                </div>
-                <div class="cart">
+                </div> -->
+                <a href="http://127.0.0.1:5500/shopping-cart.html">
+                    <div class="cart">
+                    </div>
+                    <p>Cart</p>
+                </a>
+                <button onclick="darkMode()"> Light</button>
 
-
-                    <a href="http://127.0.0.1:5500/shopping-cart.html">
-
-                        <i class="fal fa-shopping-cart" style="color:#313133; font-size: 2vw;"> </i>
-                        Cart
-                    </a>
-                </div>
             </div>
         </div>
 
         <div id="cart-container">
-            <div id="empty-cart">
+            <!-- <div id="empty-cart">
+            </div> -->
+
+            <div id="products-container">
+                <div id="rows"></div>
+                <div class="total-price">
+                    <div class="subtotal">
+                        <p>Subtotal </p>
+                        <span id="subtotal"></span>
+                    </div>
+
+                    <div class="shipping">
+                        <p>Shipping </p>
+                        <span id="shipping">50 LE</span>
+                    </div>
+                    <div class="line"></div>
+
+                    <div class="total">
+                        <p>total </p>
+                        <span id="total"></span>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+
+            <div class="footer-container">
+                <div class="footer-details">
+                    <div class="logo">
+                        <p>Blanc</p>
+                    </div>
+                    <div class="details">
+                        <p class="title">Reach Us</p>
+
+                        <p class="main">Mobile Number</p>
+                        <p class="submain">01121759896</p>
+                        <p class="main">Email</p>
+                        <p class="submain">blanc@gmail.com</p>
+                    </div>
+
+
+                    <div class="quick-links">
+                        <p class="title">Quick Links</p>
+                        <a href="">About Us</a>
+                        <a href="">Refund and Returns Policy</a>
+                        <a href="">Privacy Policy</a>
+                        <a href="">Terms and Conditions</a>
+                    </div>
+                    <div class="newsletter">
+                        <p class="title"> Sign up for our newsletter</p>
+                        <div class="description">Subscribe to get the latest updates about our store
+                        </div>
+                        <form action="">
+                            <input type="email" required placeholder="Enter your Email">
+                            <button class="submit">Subscribe Now!</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="copy-rights">
+                    Blanc All rights reserved © 2024.
+
+
+                </div>
             </div>
         </div>
     </div>

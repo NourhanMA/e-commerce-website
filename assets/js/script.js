@@ -1,6 +1,22 @@
+let mode = true
 const darkMode = () => {
-    document.body.classList.toggle("dark-mode")
+    mode = !mode
+    console.log(mode)
+    localStorage.setItem('mode', mode ? 'light' : 'dark-mode')
+    document.body.classList.toggle('dark-mode')
+
+
 }
+const getMode = () => {
+    console.log("GGG")
+    if ('mode' in localStorage) {
+        document.body.classList.add(localStorage.getItem('mode'))
+    } else {
+        localStorage.setItem('mode', mode ? 'light' : 'dark-mode')
+        document.body.classList.add(localStorage.getItem('mode'))
+    }
+}
+getMode()
 
 
 let allProducts = []
@@ -10,7 +26,7 @@ let filterdCategories = []
 
 fetch("https://fakestoreapi.com/products").then((data) => {
     data.json().then((finaldata) => {
-        console.log(finaldata)
+        // console.log(finaldata)
         allProducts = finaldata.map((p) => {
             return {
                 id: p.id,
@@ -21,21 +37,20 @@ fetch("https://fakestoreapi.com/products").then((data) => {
                 category: p.category,
                 price: p.price,
                 description: p.description,
-                quantity: Math.floor(Math.random() * 10),
+                // quantity: Math.floor(Math.random() * 10),
                 cartQuantity: 0
             }
         })
-        console.log(allProducts)
+        // console.log(allProducts)
         filterdProducts = [...allProducts]
         categories = [
             ...new Set(filterdProducts.map((el) => el.category)),
         ];
 
-        console.log(categories)
+        // console.log(categories)
         renderProducts(filterdProducts)
         renderCategories(categories)
     })
-
 })
 
 
@@ -69,45 +84,43 @@ const renderProducts = (products) => {
 }
 
 let cartProducts = []
+
 const addToCart = (product) => {
+    let found = false
+
     if ('cart-products' in localStorage) {
-        let cartProducts = JSON.parse(localStorage.getItem('cart-products'))
-        console.log(cartProducts)
-        let isExist = cartProducts.find((el) => (el.id == product.id))
+        cartProducts = JSON.parse(localStorage.getItem('cart-products'))
 
-        if (isExist) {
-            product.cartQuantity = product.cartQuantity += 1
-            // arr.push(product)
-            cartProducts = cartProducts.filter((el) => (el.id == product.id && el.quantity > el.cartQuantity) ? el.cartQuantity += 1 : '')
-            localStorage.setItem('cart-products', JSON.stringify(cartProducts))
-
-        } else {
+        cartProducts.forEach((el) => {
+            if (product.id == el.id) {
+                found = true
+                el.cartQuantity += 1
+                localStorage.setItem('cart-products', JSON.stringify(cartProducts))
+            }
+        })
+        if (!found) {
             setLocalItem(product, cartProducts)
         }
     } else {
         setLocalItem(product, cartProducts)
     }
-
-
-
 }
 
-const setLocalItem = (product, arr) => {
+const setLocalItem = (product, cartProducts) => {
     product.cartQuantity = product.cartQuantity += 1
-    arr.push(product)
-    localStorage.setItem('cart-products', JSON.stringify(arr))
-    console.log(product.cartQuantity)
+    cartProducts.push(product)
+    localStorage.setItem('cart-products', JSON.stringify(cartProducts))
 }
 
 const renderCategories = (category) => {
     const filterContainer = document.getElementById('filter-container')
 
-    category.forEach((cat) => {
+    category.forEach((cat, i) => {
         const catDiv = document.createElement('div')
         catDiv.classList.add('cat-row')
 
         catDiv.innerHTML = `
-        <input type="checkbox" id=${cat} value=${cat}>
+        <input type="checkbox" id="${cat}" value="${cat}">
         <label for="${cat}">${cat}</label>
         `
         filterContainer.appendChild(catDiv)
@@ -119,6 +132,17 @@ const renderCategories = (category) => {
     })
 }
 
+const checkBoxHandler = (e) => {
+    console.log(e.target)
+    e.target.checked ?
+        filterdCategories.push(e.target.value) :
+        filterdCategories = filterdCategories.filter(el => el != e.target.value)
+
+
+
+    renderFilterdData(filterdCategories)
+}
+
 const resetPage = () => {
     const productContainer = document.getElementById('products-container')
     productContainer.innerHTML = ''
@@ -126,31 +150,46 @@ const resetPage = () => {
 
 const renderFilterdData = (filterdCategories) => {
     filterdProducts = []
-    filterdCategories.length != 0 ? filterdCategories.forEach((elem) => {
-        resetPage()
-        filterdProducts.push(...allProducts.filter((el) => el.category === elem))
-    }) : filterdProducts = [...allProducts]
+
+    if (filterdCategories.length != 0) {
+        filterdCategories.forEach((elem) => {
+            resetPage()
+            filterdProducts.push(...allProducts.filter((el) => el.category === elem))
+
+        })
+    }
+    else {
+        filterdProducts = [...allProducts]
+    }
+    if (sortData == 1) {
+        ascending(filterdProducts)
+    } else if (sortData == 2) {
+        descending(filterdProducts)
+    }
+
     renderProducts(filterdProducts)
 }
 
-const checkBoxHandler = (e) => {
-    e.target.checked ?
-        filterdCategories.push(e.target.value) :
-        filterdCategories = filterdCategories.filter(el => el != e.target.value)
-    renderFilterdData(filterdCategories)
-}
 
+let sortData = 0;
 
 const sortProducts = () => {
     const sortContainer = document.getElementById('sorting')
-    sortContainer.addEventListener('change', (e) => {
-        if (e.target.value == 1) {
-            filterdProducts = filterdProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+    sortData = sortContainer.value
+    if (sortContainer.value == 1) {
+        ascending(filterdProducts)
 
-        } else if (e.target.value == 2) {
-            filterdProducts = filterdProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-        }
-        resetPage()
-        renderProducts(filterdProducts)
-    })
+    } else if (sortContainer.value == 2) {
+        descending(filterdProducts)
+    }
+    resetPage()
+    renderProducts(filterdProducts)
 }
+
+const ascending = (data) => {
+    data = data.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+}
+
+const descending = (data) => {
+    data = data.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+} 
